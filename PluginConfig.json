@@ -1,0 +1,10 @@
+{
+  "name": "Endpoint Lasso",
+  "desc": "A configurable Supernote lasso plugin that sends metadata and optional page PNGs to your endpoint.",
+  "iconPath": "assets/icon.png",
+  "versionName": "0.1.1",
+  "versionCode": "1",
+  "pluginID": "6x3r0w8qk2p9lm4n",
+  "pluginKey": "supernote_endpoint_lasso",
+  "jsMainPath": "index"
+}
