@@ -1,12 +1,13 @@
 # Endpoint Lasso
 
-Endpoint Lasso is a public Supernote plugin framework for sending the current lasso selection to your own HTTP endpoint.
+Endpoint Lasso is a public Supernote plugin framework for sending the current lasso selection, or highlighted DOC text, to your own HTTP endpoint.
 
 It is intentionally generic. Instead of baking in one personal backend, it gives you a reusable transport layer that you can point at your own service for OCR, indexing, search, note capture, flashcard generation, or custom LLM pipelines.
 
 ## What It Does
 
 - works from the lasso toolbar in `NOTE` and `DOC`
+- also adds a DOC text-selection toolbar button for highlighted text
 - sends structured metadata for the current file, page, lasso rectangle, and selected elements
 - can optionally attach a generated full-page `NOTE` PNG
 - supports either `multipart` or `json` request formats
@@ -50,6 +51,7 @@ Common optional variables:
 - `SN_AUTH_HEADER_VALUE`: auth header value, for example `Bearer ...`
 - `SN_EXTRA_HEADERS_JSON`: JSON object of extra headers
 - `SN_BUTTON_NAME`: toolbar label (default: `Send Lasso`)
+- `SN_DOC_SELECTION_BUTTON_NAME`: DOC text-selection label (default: `Send Selection`)
 - `SN_TIMEOUT_MS`: request timeout in milliseconds (default: `20000`)
 - `SN_INCLUDE_PAGE_PNG`: `true` or `false` (default: `true`)
 - `SN_EXPORT_DIR`: device path for temporary PNG export
@@ -61,13 +63,13 @@ Common optional variables:
 
 ## Payload Shape
 
-Endpoint Lasso builds a payload shaped like this:
+For lasso selections, Endpoint Lasso builds a payload shaped like this:
 
 ```json
 {
   "framework": {
     "name": "Endpoint Lasso",
-    "version": "0.1.1"
+    "version": "0.1.2"
   },
   "generated_at": "2026-04-14T00:00:00.000Z",
   "source": {
@@ -100,9 +102,43 @@ If `SN_REQUEST_FORMAT=multipart`, the payload is sent as a JSON field plus an op
 
 If `SN_REQUEST_FORMAT=json`, the payload is sent as JSON only.
 
+For highlighted DOC text, the payload uses the same transport but sets
+`source.selection_kind` to `doc_text` and includes both a structured selection
+object and a convenience top-level `selected_text` field:
+
+```json
+{
+  "framework": {
+    "name": "Endpoint Lasso",
+    "version": "0.1.2"
+  },
+  "generated_at": "2026-04-22T00:00:00.000Z",
+  "source": {
+    "file_path": "...",
+    "file_kind": "document",
+    "page_num": 3,
+    "page_size": null,
+    "selection_kind": "doc_text",
+    "selection_api": "PluginDocAPI.getLastSelectedText"
+  },
+  "selection": {
+    "kind": "doc_text",
+    "text": "highlighted text from the document"
+  },
+  "selected_text": "highlighted text from the document",
+  "elements": [],
+  "attachments": {
+    "page_png_included": false,
+    "page_png_mode": "not-supported-for-doc-selection"
+  }
+}
+```
+
 ## Notes
 
 - `NOTE` and `DOC` lasso metadata are both supported.
+- DOC highlighted text is read with `PluginDocAPI.getLastSelectedText`, falling
+  back to `getSelectedText` on older SDKs.
 - Full-page PNG export is only attempted for `NOTE` files.
 - The toolbar action is headless (`showType=0`) and uses native dialogs for success/failure feedback.
 - `.env` and generated runtime config are intentionally ignored by git.

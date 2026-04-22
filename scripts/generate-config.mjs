@@ -4,7 +4,10 @@ import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 
-const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const projectRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..',
+);
 const envPath = path.join(projectRoot, '.env');
 const outputPath = path.join(projectRoot, 'src', 'runtimeConfig.js');
 
@@ -39,21 +42,27 @@ function parseDotEnv(text) {
 }
 
 function loadEnv() {
-  const fileEnv = fs.existsSync(envPath) ? parseDotEnv(fs.readFileSync(envPath, 'utf8')) : {};
+  const fileEnv = fs.existsSync(envPath)
+    ? parseDotEnv(fs.readFileSync(envPath, 'utf8'))
+    : {};
   return {...fileEnv, ...process.env};
 }
 
 function readRequired(env, key) {
   const value = String(env[key] || '').trim();
   if (!value) {
-    throw new Error(`${key} is required. Set it in .env or the shell environment.`);
+    throw new Error(
+      `${key} is required. Set it in .env or the shell environment.`,
+    );
   }
   return value;
 }
 
 function readString(env, key, fallback) {
   const value = env[key];
-  return value == null || String(value).trim() === '' ? fallback : String(value).trim();
+  return value == null || String(value).trim() === ''
+    ? fallback
+    : String(value).trim();
 }
 
 function readInt(env, key, fallback) {
@@ -93,7 +102,9 @@ function readHeaders(env) {
   const authValue = readString(env, 'SN_AUTH_HEADER_VALUE', '');
 
   if ((authName && !authValue) || (!authName && authValue)) {
-    throw new Error('SN_AUTH_HEADER_NAME and SN_AUTH_HEADER_VALUE must be set together.');
+    throw new Error(
+      'SN_AUTH_HEADER_NAME and SN_AUTH_HEADER_VALUE must be set together.',
+    );
   }
 
   if (authName && authValue) {
@@ -118,17 +129,29 @@ function readHeaders(env) {
 function buildConfig(env) {
   return {
     endpointUrl: readRequired(env, 'SN_ENDPOINT_URL'),
-    requestFormat: readString(env, 'SN_REQUEST_FORMAT', 'multipart') === 'json' ? 'json' : 'multipart',
+    requestFormat:
+      readString(env, 'SN_REQUEST_FORMAT', 'multipart') === 'json'
+        ? 'json'
+        : 'multipart',
     timeoutMs: readInt(env, 'SN_TIMEOUT_MS', 20000),
     includePagePng: readBool(env, 'SN_INCLUDE_PAGE_PNG', true),
     exportDir: readString(env, 'SN_EXPORT_DIR', '/storage/emulated/0/Export'),
     pngScale: readInt(env, 'SN_PNG_SCALE', 1),
     pngBackgroundType: readInt(env, 'SN_PNG_BACKGROUND_TYPE', 1),
     buttonName: readString(env, 'SN_BUTTON_NAME', 'Send Lasso'),
+    docSelectionButtonName: readString(
+      env,
+      'SN_DOC_SELECTION_BUTTON_NAME',
+      'Send Selection',
+    ),
     payloadFieldName: readString(env, 'SN_PAYLOAD_FIELD_NAME', 'payload'),
     imageFieldName: readString(env, 'SN_IMAGE_FIELD_NAME', 'page_png'),
-    successDialogTitle: readString(env, 'SN_SUCCESS_DIALOG_TITLE', 'Endpoint response'),
-    pluginVersion: '0.1.1',
+    successDialogTitle: readString(
+      env,
+      'SN_SUCCESS_DIALOG_TITLE',
+      'Endpoint response',
+    ),
+    pluginVersion: '0.1.2',
     headers: readHeaders(env),
   };
 }

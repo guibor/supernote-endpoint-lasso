@@ -1,6 +1,10 @@
 import React from 'react';
 import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {BUTTON_NAME, ENDPOINT_CONFIG} from './src/config';
+import {
+  BUTTON_DOC_SELECTION_NAME,
+  BUTTON_NAME,
+  ENDPOINT_CONFIG,
+} from './src/config';
 
 function App(): React.JSX.Element {
   return (
@@ -9,28 +13,33 @@ function App(): React.JSX.Element {
         <Text style={styles.kicker}>SUPERNOTE FRAMEWORK</Text>
         <Text style={styles.title}>Endpoint Lasso</Text>
         <Text style={styles.paragraph}>
-          This plugin is intended to run headlessly from the lasso toolbar. Use it as a shareable
-          framework for sending Supernote lasso selections to your own HTTP endpoint.
+          This plugin is intended to run headlessly from the lasso and DOC
+          text-selection toolbars. Use it as a shareable framework for sending
+          Supernote selections to your own HTTP endpoint.
         </Text>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Current Build</Text>
-          <Text style={styles.cardLine}>Button: {BUTTON_NAME}</Text>
-          <Text style={styles.cardLine}>Format: {ENDPOINT_CONFIG.requestFormat}</Text>
+          <Text style={styles.cardLine}>Lasso Button: {BUTTON_NAME}</Text>
+          <Text style={styles.cardLine}>
+            DOC Text Button: {BUTTON_DOC_SELECTION_NAME}
+          </Text>
+          <Text style={styles.cardLine}>
+            Format: {ENDPOINT_CONFIG.requestFormat}
+          </Text>
           <Text style={styles.cardLine}>
             Page PNG: {ENDPOINT_CONFIG.includePagePng ? 'enabled' : 'disabled'}
           </Text>
         </View>
 
         <Text style={styles.sectionTitle}>Build Flow</Text>
-        <Text style={styles.paragraph}>
-          1. Copy `.env.example` to `.env`.
-        </Text>
+        <Text style={styles.paragraph}>1. Copy `.env.example` to `.env`.</Text>
         <Text style={styles.paragraph}>
           2. Set `SN_ENDPOINT_URL` and any optional auth headers.
         </Text>
         <Text style={styles.paragraph}>
-          3. Run `npm run build:plugin` to generate `src/runtimeConfig.js` and package the plugin.
+          3. Run `npm run build:plugin` to generate `src/runtimeConfig.js` and
+          package the plugin.
         </Text>
       </ScrollView>
     </SafeAreaView>
