@@ -32,7 +32,7 @@ PluginManager.registerButton(2, ['NOTE', 'DOC'], {
   showType: 0,
 });
 
-PluginManager.registerButton(3, ['DOC'], {
+PluginManager.registerButton(3, ['NOTE', 'DOC'], {
   id: BUTTON_DOC_SELECTION_ID,
   name: BUTTON_DOC_SELECTION_NAME,
   icon: iconUri,
@@ -49,8 +49,8 @@ PluginManager.registerButtonListener({
       event.id === BUTTON_ID
         ? sendCurrentLassoSelection
         : event.id === BUTTON_DOC_SELECTION_ID
-          ? sendCurrentDocSelection
-          : null;
+        ? sendCurrentDocSelection
+        : null;
 
     if (!request) {
       return;

@@ -25,7 +25,7 @@ export const ENDPOINT_CONFIG = Object.freeze({
   successDialogTitle: String(
     GENERATED_CONFIG.successDialogTitle || 'Endpoint response',
   ),
-  pluginVersion: String(GENERATED_CONFIG.pluginVersion || '0.1.2'),
+  pluginVersion: String(GENERATED_CONFIG.pluginVersion || '0.1.3'),
 });
 
 export function isNotePath(filePath) {

@@ -22,10 +22,16 @@ export async function sendCurrentLassoSelection(logger = console) {
 }
 
 export async function sendCurrentDocSelection(logger = console) {
-  return sendCurrentSelection('doc_selection', logger);
+  const selectionPromise = readLastSelectedText().catch(error => ({
+    success: false,
+    error: {
+      message: error instanceof Error ? error.message : String(error),
+    },
+  }));
+  return sendCurrentSelection('doc_selection', logger, {selectionPromise});
 }
 
-async function sendCurrentSelection(mode, logger = console) {
+async function sendCurrentSelection(mode, logger = console, options = {}) {
   if (isRunning) {
     await NativeUIUtils.showRattaDialog(
       'A request is already in progress.',
@@ -40,7 +46,7 @@ async function sendCurrentSelection(mode, logger = console) {
   try {
     const payload =
       mode === 'doc_selection'
-        ? await buildDocSelectionPayload()
+        ? await buildDocSelectionPayload(options.selectionPromise)
         : await buildLassoPayload();
     const pngPath = await maybeGeneratePagePng(
       payload.source.file_path,
@@ -72,7 +78,7 @@ async function sendCurrentSelection(mode, logger = console) {
   }
 }
 
-async function buildDocSelectionPayload() {
+async function buildDocSelectionPayload(selectionPromise) {
   const [filePathRes, pageRes] = await Promise.all([
     PluginCommAPI.getCurrentFilePath(),
     PluginCommAPI.getCurrentPageNum(),
@@ -90,7 +96,7 @@ async function buildDocSelectionPayload() {
     );
   }
 
-  const selectedText = await getSelectedTextWithRetry();
+  const selectedText = await getSelectedTextWithRetry(selectionPromise);
   const filePath = filePathRes.result;
   const pageNum = pageRes.result;
 
@@ -208,12 +214,31 @@ async function serializeLassoElement(element) {
   };
 }
 
-async function getSelectedTextWithRetry() {
+async function getSelectedTextWithRetry(selectionPromise) {
+  let lastError = '';
+
+  if (selectionPromise) {
+    try {
+      const response = await selectionPromise;
+      if (response?.success === true) {
+        const text = extractSelectedText(response.result);
+        if (text) {
+          return text;
+        }
+        lastError = 'preloaded selection API returned empty text';
+      } else {
+        lastError =
+          response?.error?.message ?? 'preloaded selection API failed';
+      }
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : String(error);
+    }
+  }
+
   if (DOC_SELECTION_RETRY.initialDelayMs > 0) {
     await sleep(DOC_SELECTION_RETRY.initialDelayMs);
   }
 
-  let lastError = '';
   for (let attempt = 1; attempt <= DOC_SELECTION_RETRY.attempts; attempt += 1) {
     try {
       const response = await readLastSelectedText();

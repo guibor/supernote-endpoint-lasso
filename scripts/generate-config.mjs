@@ -151,7 +151,7 @@ function buildConfig(env) {
       'SN_SUCCESS_DIALOG_TITLE',
       'Endpoint response',
     ),
-    pluginVersion: '0.1.2',
+    pluginVersion: '0.1.3',
     headers: readHeaders(env),
   };
 }

@@ -69,7 +69,7 @@ For lasso selections, Endpoint Lasso builds a payload shaped like this:
 {
   "framework": {
     "name": "Endpoint Lasso",
-    "version": "0.1.2"
+    "version": "0.1.3"
   },
   "generated_at": "2026-04-14T00:00:00.000Z",
   "source": {
@@ -110,7 +110,7 @@ object and a convenience top-level `selected_text` field:
 {
   "framework": {
     "name": "Endpoint Lasso",
-    "version": "0.1.2"
+    "version": "0.1.3"
   },
   "generated_at": "2026-04-22T00:00:00.000Z",
   "source": {

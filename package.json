@@ -1,6 +1,6 @@
 {
   "name": "supernote-endpoint-lasso",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "A configurable Supernote lasso plugin that sends selected content and optional page PNGs to your own endpoint.",
   "scripts": {
